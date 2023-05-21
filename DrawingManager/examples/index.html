@@ -68,10 +68,10 @@
             sorptionDistance: 20, // 边界吸附距离
             enableGpc: true, // 是否开启延边裁剪功能
             enableLimit: true,  // 是否开启超限提示
-            limitOptions: {
-                area: 50000000, // 面积超限值
-                distance: 30000
-            },
+            // limitOptions: {
+            //     area: 50000000, // 面积超限值
+            //     distance: 30000
+            // },
             circleOptions: styleOptions, // 圆的样式
             polylineOptions: styleOptions, // 线的样式
             polygonOptions: styleOptions, // 多边形的样式
@@ -80,6 +80,58 @@
         });
         let zoomControl=new BMapGL.ZoomControl();
         map.addControl(zoomControl);
+
+        drawingManager.addEventListener("overlaycomplete", function({overlay,drawingMode}) {
+            console.log('overlaycomplete', {overlay,drawingMode})
+            // setTimeout(() => {
+            //     console.log('开始编辑')
+            //     drawingManager.setOverlayEdit(drawingMode,overlay)
+            // }, 1000);
+        });
+
+        showPolylineAndEdit()
+
+        function showCircleAndEdit(){
+            const centerPoint = new BMapGL.Point(116.45833488698182, 40.059338902073996)
+            const overlay=new BMapGL.Circle(centerPoint, 30000,drawingManager.circleOptions );
+            map.addOverlay(overlay);
+
+            setTimeout(() => {
+                drawingManager.setOverlayEdit('circle',overlay)
+            }, 2000);
+        }
+
+        function showRectangAndEdit(){
+            const startPoint = new BMapGL.Point(116.12100934871006, 39.8793449788567)
+            const endPoint = new BMapGL.Point(116.92090505579918, 40.207926889047556)
+            const overlay = new BMapGL.Polygon(drawingManager._getRectanglePoint(startPoint, endPoint), drawingManager.rectangleOptions);
+            map.addOverlay(overlay);
+
+            setTimeout(() => {
+                drawingManager.setOverlayEdit('rectangle',overlay)
+            }, 2000);
+        }
+
+        function showPolylineAndEdit(){
+            const points=[
+                new BMapGL.Point(116.33096476236062, 40.191291903111484),
+                new BMapGL.Point(116.91195613652862, 40.10571138659773),
+                new BMapGL.Point(116.48240801155133, 39.799483494113545),
+                new BMapGL.Point(116.3240809783065, 39.83345910466389),
+                new BMapGL.Point(116.33096476236062, 40.191291903111484),
+            ]
+
+            const overlay = new BMapGL.Polygon(points, drawingManager.polylineOptions);
+            map.addOverlay(overlay);
+
+            setTimeout(() => {
+                drawingManager.setOverlayEdit('polygon',overlay)
+                setTimeout(()=>{
+                    /** 模拟点击完成事件 */
+                    confirmOperate.click()
+                })
+            }, 2000);
+        }
     </script>
 </body>
 </html>
